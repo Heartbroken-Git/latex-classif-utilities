@@ -1,22 +1,62 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=2cm]{geometry}
 
-\usepackage[]{tlp}
-\usepackage[]{igi1300}
+\usepackage[TLP:AMBER]{tlp}
+\usepackage[NP]{igi1300}
 
-\title{Tampons}
-\author{packman }
+\title{Protection and Classification Stamps}
+\author{Rémi Dubois}
 \date{October 2020}
 
 \begin{document}
 
 \maketitle
 
-\section{Introduction}
+\section{Traffic Light Protocol (TLP) Stamps}
 
-\tlpstamp\TLP{RED}
+%\tlpstamp
+\begin{flushright}
+\TLP{RED}
+\TLP{AMBER}
+\TLP{GREEN}
+\TLP{WHITE}
+\end{flushright}
 
-\iscstamp\ISC{DR}\ISC{SF}
+\section{French Classified Information Regulation (IGI 1300) Stamps}
 
+\subsection{Cover page}
+\begin{center}
+    \ISC*{SD}
+    
+    \ISC*{CD}
+    
+    \ISC*{DR}
+    
+    \ISC*{SF}
+    
+    \ISC*{NP}
+\end{center}
+
+\subsection{Other pages}
+
+%\iscstamp
+
+\begin{center}
+\ISC{SD}
+\ISC{CD}
+\ISC{DR}
+\ISC{SF}
+
+\ISC{NP}
+\end{center}
+
+\section{Other Stamps Examples}
+
+\iscfont{\sffamily}
+\begin{center}
+\protectionstamp{black}[1pt]{Confidentiel Recrutement}
+\protectionstamp{black}[1pt]{Confidentiel Personnel}
+\end{center}
 \end{document}

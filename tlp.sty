@@ -2,43 +2,43 @@
 \ProvidesPackage{tlp}[2020/10/01 v1.0 Traffic Light Protocol (TLP) stamps]
 % Implements https://www.first.org/tlp/ stamps
 
-\RequirePackage{color}
+\RequirePackage{xcolor}
 \RequirePackage{xstring}
 
-\def\@TlpLevel{WHITE}
-\DeclareOption{TLP:RED}{\def\@TlpLevel{RED}}
-\DeclareOption{TLP:GREEN}{\def\@TlpLevel{GREEN}}
-\DeclareOption{TLP:AMBER}{\def\@TlpLevel{AMBER}}
-\DeclareOption{TLP:WHITE}{\def\@TlpLevel{WHITE}}
+\def\Tlp@Level{WHITE}
+\newcommand\tlp[1]{\def\Tlp@Level{#1}}
+\DeclareOption{TLP:RED}{\def\Tlp@Level{RED}}
+\DeclareOption{TLP:GREEN}{\def\Tlp@Level{GREEN}}
+\DeclareOption{TLP:AMBER}{\def\Tlp@Level{AMBER}}
+\DeclareOption{TLP:WHITE}{\def\Tlp@Level{WHITE}}
 
 \ProcessOptions\relax
 
-\def\@TlpFont{\sffamily\bfseries\large}
-\newcommand{\tlpfont}[1]{\def{\@TlpFont}{#1}}
+\def\Tlp@Font{\sffamily\bfseries\large}
+\newcommand\tlpfont[1]{\def\Tlp@Font{#1}}
 
 \definecolor{TlpRed}{RGB}{255,0,51}
 \definecolor{TlpAmber}{RGB}{255,192,0}
 \definecolor{TlpGreen}{RGB}{51,255,0}
 \definecolor{TlpWhite}{RGB}{255,255,255}
 
-\newcommand{\@TlpStamp}[2]{%
+\newcommand\Tlp@Stamp[2]{%
     {%
-        \@TlpFont % Set font
+        \Tlp@Font % Set font
         \setlength{\fboxsep}{\f@size pt} % Get current size font
         \setlength{\fboxsep}{0.5\fboxsep}% Keep half size font
         \colorbox{black}{\color{#1}#2}%
     }%
 }
 
-\newcommand{\TLP}[1]{%
+\newcommand\TLP[1]{%
     \IfStrEqCase*{#1}{%
-        {RED}{\@TlpStamp{TlpRed}{TLP:RED}}%
-        {AMBER}{\@TlpStamp{TlpAmber}{TLP:AMBER}}%
-        {GREEN}{\@TlpStamp{TlpGreen}{TLP:GREEN}}%
-        {WHITE}{\@TlpStamp{TlpWhite}{TLP:WHITE}}%
+        {RED}{\Tlp@Stamp{TlpRed}{TLP:RED}}%
+        {AMBER}{\Tlp@Stamp{TlpAmber}{TLP:AMBER}}%
+        {GREEN}{\Tlp@Stamp{TlpGreen}{TLP:GREEN}}%
+        {WHITE}{\Tlp@Stamp{TlpWhite}{TLP:WHITE}}%
     }[\PackageWarning{tlp}{Only TLP:RED, TLP:AMBER, TLP:GREEN and TLP:WHITE are defined, received '#1'}]%
 }
 
-\newcommand{\tlp}[1]{\def\@TlpLevel{#1}}
 
-\newcommand{\tlpstamp}{\TLP{\@TlpLevel}}
+\newcommand\tlpstamp{\TLP{\Tlp@Level}}

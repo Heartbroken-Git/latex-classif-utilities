@@ -1,0 +1,42 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{igi1300}[2020/10/01 v1.0 French Mle 13/IGI 1300 stamps]
+% Implements French classified information regulation (IGI 1300) stamps
+% ISC = Informations et Supports Classifiés (Classified informations and materials)
+% http://www.sgdsn.gouv.fr/uploads/2018/01/igi-1300-franxxais.pdf, Mle 13/IGI 1300 (page 176)
+
+\RequirePackage{color}
+\RequirePackage{xstring}
+
+\def\@IscLevel{NP}
+\DeclareOption{NP}{\def\@IscLevel{NP}}
+\DeclareOption{DR}{\def\@IscLevel{DR}}
+\DeclareOption{CD}{\def\@IscLevel{CD}}
+\DeclareOption{SD}{\def\@IscLevel{SD}}
+
+\ProcessOptions\relax
+
+\def\@IscFont{\sffamily\bfseries\large}
+\newcommand{\iscfont}[1]{\def{\@IscFont}{#1}}
+
+\newcommand{\@IscStamp}[2]{%
+    {%
+        \@IscFont % Set font
+        \setlength{\fboxsep}{\f@size pt} % Get current size font
+        \setlength{\fboxsep}{0.5\fboxsep}% Keep half size font
+        \fcolorbox{#1}{white}{\color{#1}\uppercase{#2}}%
+    }%
+}
+
+\newcommand{\ISC}[1]{%
+    \IfStrEqCase*{#1}{%
+        {NP}{\underline{\@IscFont Non protégé}}%
+        {SF}{\setlength{\fboxrule}{1mm}\@IscStamp{blue}{Spécial France}}%
+        {DR}{\setlength{\fboxrule}{1mm}\@IscStamp{red}{Diffusion Restreinte}}%
+        {CD}{\setlength{\fboxrule}{1mm}\@IscStamp{red}{Confidentiel Défense}}%
+        {SD}{\setlength{\fboxrule}{1.5mm}\@IscStamp{red}{Secret Défense}}%
+    }[\PackageWarning{tlp}{Only NP, SF, DR, CD and SD are defined, received '#1'}]%
+}
+
+\newcommand{\isc}[1]{\def\@IscLevel{#1}}
+
+\newcommand{\iscstamp}{\ISC{\@IscLevel}}

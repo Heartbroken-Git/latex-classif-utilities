@@ -4,6 +4,7 @@
 % ISC = Informations et Supports Classifiés (Classified informations and materials)
 % http://www.sgdsn.gouv.fr/uploads/2018/01/igi-1300-franxxais.pdf, Mle 13/IGI 1300 (page 176)
 
+\RequirePackage{xkeyval}
 \RequirePackage{xstring}
 \RequirePackage{xparse}
 \RequirePackage{tikz}
@@ -22,51 +23,125 @@
 
 \ProcessOptions\relax
 
-\def\Isc@Font{\sffamily\bfseries\fontsize{4mm}{4mm}\selectfont}
-\newcommand\iscfont[1]{\def\Isc@Font{#1}}
-
-\NewDocumentCommand\Isc@Stamp{o m o m o}{
-    \hspace{0.25mm}%
-    \tikz[baseline=(stamp.base)]{
+\newlength\IscStamp@framewidth
+\newlength\IscStamp@framesep
+\newlength\IscStamp@fontsize
+\newlength\IscStamp@coversize
+\newlength\IscStamp@commentsize
+\newlength\IscStamp@maxwidth
+\define@boolkey{IscStamp}{cover}[true]{}
+\define@key{IscStamp}{color}{\def\IscStamp@color{#1}}
+\define@boolkey{IscStamp}{frame}[true]{}
+\define@key{IscStamp}{framewidth}{\setlength\IscStamp@framewidth{#1}}
+\define@key{IscStamp}{framesep}{\setlength\IscStamp@framesep{#1}}
+\define@key{IscStamp}{font}{\def\IscStamp@font{#1}}
+\define@key{IscStamp}{fontsize}{\setlength\IscStamp@fontsize{#1}}
+\define@key{IscStamp}{coversize}{\setlength\IscStamp@coversize{#1}}
+\define@key{IscStamp}{commentsize}{\setlength\IscStamp@commentsize{#1}}
+\define@key{IscStamp}{maxwidth}{\setlength\IscStamp@maxwidth{#1}}
+\define@key{IscStamp}{comment}{\def\IscStamp@comment{#1}}
+\presetkeys{IscStamp}{
+    cover=false,
+    color=black,
+    frame=true,
+    framewidth=1pt,
+    framesep=4mm,
+    font={\sffamily},
+    fontsize=4mm,
+    coversize=6mm,
+    commentsize=3mm,
+    maxwidth=95mm,
+    comment={},
+}{}
+\newcommand\Isc@Stamp[2][]{
+    \setkeys{IscStamp}{#1}%
+    \ifKV@IscStamp@frame\else\IscStamp@framewidth0pt\fi%
+    \ifKV@IscStamp@frame\else\IscStamp@framesep0pt\fi%
+    \tikz[baseline=(stamp.base)]{%
         \node[
             rectangle,
-            \IfValueT{#3}{draw},
-            line width=\IfValueTF{#3}{#3}{0},
-            inner xsep=\IfValueTF{#3}{4mm}{0},
-            inner ysep=\IfValueTF{#3}{4mm}{0},
-            minimum height=12mm,
-            execute at begin node={\begin{varwidth}{95mm}\centering},
+            \ifKV@IscStamp@frame draw\fi,
+            line width=\IscStamp@framewidth,
+            inner sep=\IscStamp@framesep,
+            minimum height=\ifKV@IscStamp@frame 3\else 2\fi\IscStamp@fontsize,
+            execute at begin node={\begin{varwidth}{\IscStamp@maxwidth}\centering},
             execute at end node={\end{varwidth}},
-            color=#2,
+            color=\IscStamp@color,
             text centered,
         ] (stamp) {
-            \Isc@Font
-            \IfEq{#1}{cover}{ % Cover page stamp
-                \fontsize{5mm}{5mm}\selectfont
-                \IfValueTF{#5}{ % Additionnal text
-                    \uppercase{\uline{#4}}\\[2mm]%
-                    \normalfont\fontsize{3mm}{3mm}\selectfont #5%
-                }{ % No additionnal text
-                    \IfValueTF{#3}{\uppercase{#4}}{\uline{\uppercase{#4}}}%
-                }
-            }{ % Standard stamp
-                    \IfValueTF{#3}{\uppercase{#4}}{\uline{\uppercase{#4}}}%
-            }
-        };
+            \IscStamp@font%
+            \ifKV@IscStamp@cover%
+                % Cover page stamp
+                \fontsize{\IscStamp@coversize}{1.2\IscStamp@coversize}%
+                \selectfont%
+                \if \relax\IscStamp@comment\relax%
+                    % No additionnal text
+                    \ifKV@IscStamp@frame\uppercase{#2}%
+                    \else\uline{\uppercase{#2}}
+                    \fi%
+                \else % Additionnal text
+                    \uppercase{\uline{#2}}\\[2mm]%
+                    \normalfont%
+                    \fontsize{\IscStamp@commentsize}{1.2\IscStamp@commentsize}%
+                    \selectfont%
+                    \IscStamp@comment%
+                \fi%
+            \else%
+                % Standard stamp
+                \fontsize{\IscStamp@fontsize}{1.2\IscStamp@fontsize}%
+                \selectfont
+                \ifKV@IscStamp@frame\uppercase{#2}%
+                \else\uline{\uppercase{#2}}%
+                \fi%
+            \fi%
+        };%
     }%
-    \hspace{0.25mm}%
 }
 
-\NewDocumentCommand\ISC{s m}{
+\NewDocumentCommand\ISC{s m}{%
     \IfEqCase*{#2}{%
-        {NP}{\Isc@Stamp[\IfBooleanT{#1}{cover}]{black}{Non protégé}}%
-        {SF}{\Isc@Stamp[\IfBooleanT{#1}{cover}]{blue}[1mm]{Spécial France}}%
-        {DR}{\Isc@Stamp[\IfBooleanT{#1}{cover}]{red}[1mm]{Diffusion Restreinte}[Ce document ne doit être communiqué qu'aux personnes ayant besoin d'en connaître.]}%
-        {CD}{\Isc@Stamp[\IfBooleanT{#1}{cover}]{red}[1mm]{Confidentiel Défense}[Ce document ne doit être communiqué qu'aux personnes qualifiées pour le connaître.]}%
-        {SD}{\Isc@Stamp[\IfBooleanT{#1}{cover}]{red}[1.5mm]{Secret Défense}[Toute personne qui détient ce document sans avoir qualité pour le connaître tombe sous le coup des dispositions du code pénal réprimant les atteintes au secret de la défense nationale.]}%
+        {}{}% No classification
+        {NP}{% Non protégé (Unrestricted)
+            \Isc@Stamp[
+                \IfBooleanT{#1}{cover},
+                color=black,
+                frame=false,
+                font={\sffamily\bfseries},
+            ]{Non protégé}}%
+        {SF}{% Spécial France (NOFORN)
+            \Isc@Stamp[
+                \IfBooleanT{#1}{cover},
+                color=blue,
+                framewidth=1mm,
+                font={\sffamily\bfseries},
+            ]{Spécial France}}%
+        {DR}{% Diffusion Restreinte (Restricted)
+            \Isc@Stamp[
+                \IfBooleanT{#1}{cover},
+                color=red,
+                framewidth=1mm,
+                font={\sffamily\bfseries},
+                comment={Ce document ne doit être communiqué qu'aux personnes ayant besoin d'en connaître.}
+            ]{Diffusion Restreinte}}%
+        {CD}{% Confidentiel Défense (Confidential)
+            \Isc@Stamp[
+                \IfBooleanT{#1}{cover},
+                color=red,
+                framewidth=1mm,
+                font={\sffamily\bfseries},
+                comment={Ce document ne doit être communiqué qu'aux personnes qualifiées pour le connaître.}
+            ]{Confidentiel Défense}}%
+        {SD}{% Secret Défense (Secret)
+            \Isc@Stamp[
+                \IfBooleanT{#1}{cover},
+                color=red,
+                framewidth=1.5mm,
+                font={\sffamily\bfseries},
+                comment={Toute personne qui détient ce document sans avoir qualité pour le connaître tombe sous le coup des dispositions du code pénal réprimant les atteintes au secret de la défense nationale.}
+            ]{Secret Défense}}%
     }[\PackageWarning{tlp}{Only NP, SF, DR, CD and SD are defined, received '#1'}]%
 }
 
 \newcommand\iscstamp{\ISC{\Isc@Level}}
 
-\newcommand\protectionstamp{\Isc@Stamp}
+\newcommand\stampbox{\Isc@Stamp}

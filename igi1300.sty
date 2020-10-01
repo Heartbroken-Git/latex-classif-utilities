@@ -44,7 +44,7 @@
             \IfEq{#1}{cover}{ % Cover page stamp
                 \fontsize{5mm}{5mm}\selectfont
                 \IfValueTF{#5}{ % Additionnal text
-                    \uppercase{\uline{#4}}\\%
+                    \uppercase{\uline{#4}}\\[2mm]%
                     \normalfont\fontsize{3mm}{3mm}\selectfont #5%
                 }{ % No additionnal text
                     \IfValueTF{#3}{\uppercase{#4}}{\uline{\uppercase{#4}}}%

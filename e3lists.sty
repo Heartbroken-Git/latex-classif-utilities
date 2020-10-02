@@ -1,0 +1,22 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{e3lists}[2020/10/01 v1.0 LaTeX3 powered comma list for LaTeX2e]
+
+\RequirePackage{xparse}
+\RequirePackage{expl3}
+
+\ExplSyntaxOn
+
+\NewDocumentCommand\listset{mm}{%
+    \clist_clear_new:N #1%
+    \clist_set:Nn #1 {#2}%
+}
+
+\NewDocumentCommand\listappend{mm}{%
+    \clist_put_right:Nn #1 {#2}%
+}
+
+\NewDocumentCommand\listprocess{mm}{%
+    \clist_map_inline:Nn #1 {#2}%
+}
+
+\ExplSyntaxOff

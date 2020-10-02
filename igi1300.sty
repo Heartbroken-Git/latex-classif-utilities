@@ -10,49 +10,57 @@
 \RequirePackage{tikz}
 \RequirePackage{varwidth}
 \RequirePackage{ulem}
+\RequirePackage{e3lists}
 
-\def\Isc@Level{}
-\newcommand\isc[1]{\def\Isc@Level{#1}}
-\DeclareOption{NP}{\def\Isc@Level{NP}}
-\DeclareOption{DR}{\def\Isc@Level{DR}}
-\DeclareOption{CD}{\def\Isc@Level{CD}}
-\DeclareOption{SD}{\def\Isc@Level{SD}}
+\listset{\Isc@Level}{}
+\newcommand\isc[1]{\listset{\Isc@Level}{#1}}
+\DeclareOptionX<IscLevel>{NP}[]{\listset{\Isc@Level}{NP}}
+\DeclareOptionX<IscLevel>{DR}[]{\listset{\Isc@Level}{DR}}
+\DeclareOptionX<IscLevel>{CD}[]{\listset{\Isc@Level}{CD}}
+\DeclareOptionX<IscLevel>{SD}[]{\listset{\Isc@Level}{SD}}
 
-\newif\ifIsc@SF\Isc@SFfalse
-\DeclareOption{SF}{\Isc@SFtrue}
+\newif\ifIsc@LevelSF\Isc@LevelSFfalse
+\DeclareOptionX<IscLevel>{SF}[]{\Isc@LevelSFtrue}
 
-\ProcessOptions\relax
-
+%\def\IscStamp@color{}
 \newlength\IscStamp@framewidth
 \newlength\IscStamp@framesep
 \newlength\IscStamp@fontsize
 \newlength\IscStamp@coversize
 \newlength\IscStamp@commentsize
 \newlength\IscStamp@maxwidth
-\define@boolkey{IscStamp}{cover}[true]{}
-\define@key{IscStamp}{color}{\def\IscStamp@color{#1}}
-\define@boolkey{IscStamp}{frame}[true]{}
-\define@key{IscStamp}{framewidth}{\setlength\IscStamp@framewidth{#1}}
-\define@key{IscStamp}{framesep}{\setlength\IscStamp@framesep{#1}}
-\define@key{IscStamp}{font}{\def\IscStamp@font{#1}}
-\define@key{IscStamp}{fontsize}{\setlength\IscStamp@fontsize{#1}}
-\define@key{IscStamp}{coversize}{\setlength\IscStamp@coversize{#1}}
-\define@key{IscStamp}{commentsize}{\setlength\IscStamp@commentsize{#1}}
-\define@key{IscStamp}{maxwidth}{\setlength\IscStamp@maxwidth{#1}}
-\define@key{IscStamp}{comment}{\def\IscStamp@comment{#1}}
+
+\define@boolkeys{IscStamp}{frame,cover}[true]
+\DeclareOptionX<IscStamp>{color}{\def\IscStamp@color{#1}}
+\DeclareOptionX<IscStamp>{framewidth}{\setlength\IscStamp@framewidth{#1}}
+\DeclareOptionX<IscStamp>{framesep}{\setlength\IscStamp@framesep{#1}}
+\DeclareOptionX<IscStamp>{font}{\def\IscStamp@font{#1}}
+\DeclareOptionX<IscStamp>{commentfont}{\def\IscStamp@commentfont{#1}}
+\DeclareOptionX<IscStamp>{fontsize}{\setlength\IscStamp@fontsize{#1}}
+\DeclareOptionX<IscStamp>{coversize}{\setlength\IscStamp@coversize{#1}}
+\DeclareOptionX<IscStamp>{commentsize}{\setlength\IscStamp@commentsize{#1}}
+\DeclareOptionX<IscStamp>{maxwidth}{\setlength\IscStamp@maxwidth{#1}}
+\DeclareOptionX<IscStamp>{comment}{\def\IscStamp@comment{#1}}
+
 \presetkeys{IscStamp}{
+    frame=true,
     cover=false,
     color=black,
-    frame=true,
     framewidth=1pt,
     framesep=4mm,
     font={\sffamily},
+    commentfont={},
     fontsize=4mm,
     coversize=6mm,
     commentsize=3mm,
-    maxwidth=95mm,
+    maxwidth=90mm,
     comment={},
 }{}
+
+\ProcessOptionsX<IscLevel,IscStamp>
+
+\ifIsc@LevelSF\listappend{\Isc@Level}{SF}\fi
+
 \newcommand\Isc@Stamp[2][]{
     \setkeys{IscStamp}{#1}%
     \ifKV@IscStamp@frame\else\IscStamp@framewidth0pt\fi%
@@ -81,7 +89,7 @@
                     \fi%
                 \else % Additionnal text
                     \uppercase{\uline{#2}}\\[2mm]%
-                    \normalfont%
+                    \IscStamp@commentfont%%
                     \fontsize{\IscStamp@commentsize}{1.2\IscStamp@commentsize}%
                     \selectfont%
                     \IscStamp@comment%
@@ -106,7 +114,7 @@
                 \IfBooleanT{#1}{cover},
                 color=black,
                 frame=false,
-                font={\sffamily\bfseries},
+                font={\sffamily},
             ]{Non protégé}}%
         {SF}{% Spécial France (NOFORN)
             \Isc@Stamp[
@@ -121,6 +129,7 @@
                 color=red,
                 framewidth=1mm,
                 font={\sffamily\bfseries},
+                commentfont={\mdseries},
                 comment={Ce document ne doit être communiqué qu'aux personnes ayant besoin d'en connaître.}
             ]{Diffusion Restreinte}}%
         {CD}{% Confidentiel Défense (Confidential)
@@ -129,6 +138,7 @@
                 color=red,
                 framewidth=1mm,
                 font={\sffamily\bfseries},
+                commentfont={\mdseries},
                 comment={Ce document ne doit être communiqué qu'aux personnes qualifiées pour le connaître.}
             ]{Confidentiel Défense}}%
         {SD}{% Secret Défense (Secret)
@@ -137,11 +147,11 @@
                 color=red,
                 framewidth=1.5mm,
                 font={\sffamily\bfseries},
+                commentfont={\mdseries},
                 comment={Toute personne qui détient ce document sans avoir qualité pour le connaître tombe sous le coup des dispositions du code pénal réprimant les atteintes au secret de la défense nationale.}
             ]{Secret Défense}}%
     }[\PackageWarning{tlp}{Only NP, SF, DR, CD and SD are defined, received '#1'}]%
 }
 
-\newcommand\iscstamp{\ISC{\Isc@Level}}
-
+\newcommand\iscstamp{\listprocess{\Isc@Level}{\ISC{##1}}}
 \newcommand\stampbox{\Isc@Stamp}

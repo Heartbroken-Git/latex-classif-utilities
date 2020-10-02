@@ -2,9 +2,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-\usepackage{tlp}
-\usepackage[NP]{igi1300}
+\usepackage[medium,light]{FiraSans}
+\usepackage{mathpazo}
 
+\usepackage[]{tlp}
+\usepackage[NP]{igi1300}
+\usepackage{e3lists}
 
 \usepackage[
     a4paper,
@@ -12,9 +15,11 @@
     headheight=10mm,
     includeheadfoot,
 ]{geometry}
+
 \usepackage{titling}
 \usepackage{lastpage}
 \usepackage{fancyhdr}
+
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\bfseries\large\thetitle}
@@ -33,39 +38,33 @@
 
 \section{Traffic Light Protocol (TLP) Stamps}
 
+\listset{\TlpExamples}{RED,AMBER,GREEN,WHITE,CHR}
 \begin{center}
-    \TLP{RED}
-    \TLP{AMBER}
-    \TLP{GREEN}
-    \TLP{WHITE}
+    \listprocess{\TlpExamples}{\TLP{#1}}
 \end{center}
 
 \section{French Classified Information Regulation (IGI 1300) Stamps}
 
+\listset{\IscExamples}{SD,CD,DR,SF,NP}
+
 \subsection{Cover page}
 \begin{center}
-    \ISC*{SD}\\
-    \ISC*{CD}\\
-    \ISC*{DR}\\
-    \ISC*{SF}\\
-    \ISC*{NP}
+    \listprocess{\IscExamples}{\ISC*{#1}\\}
 \end{center}
 
 \subsection{Other pages}
 
 \begin{center}
-    \ISC{SD}
-    \ISC{CD}\\
-    \ISC{DR}
-    \ISC{SF}\\
-    \ISC{NP}
+    \listprocess{\IscExamples}{\ISC{#1}}
 \end{center}
 
-\section{Other Stamps Examples}
+\section{Other Stamps Examples with \texttt{\textbackslash stampbox} Command}
 
 \begin{center}
+    \stampbox[frame=false]{Non protégé OTAN / NATO Unclassified}
     \stampbox{Confidentiel Recrutement}
-    \stampbox{Confidentiel Personnel}
-    \stampbox{Réservé à usage interne}
+    \stampbox[framewidth=1mm,font=\sffamily\bfseries]{Diffusion limitée}
+    \stampbox[color=purple]{Confidentiel Personnel}
+    \stampbox[color=orange]{Réservé à usage interne}
 \end{center}
 \end{document}

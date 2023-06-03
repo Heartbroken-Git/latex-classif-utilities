@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{tlp}[2020/10/01 v1.0 Traffic Light Protocol (TLP) stamps]
+\ProvidesPackage{tlp}[2023/06/03 2.0 Traffic Light Protocol (TLP) stamps]
 % Implements https://www.first.org/tlp/ stamps
 
 \RequirePackage{xcolor}
@@ -7,13 +7,16 @@
 
 \RequirePackage{e3lists}
 
-\listset{\Tlp@Level}{WHITE}
+\listset{\Tlp@Level}{CLEAR}
 \newcommand\tlp[1]{\listset{\Tlp@Level}{#1}}
 
 \DeclareOption{RED}{\listset{\Tlp@Level}{RED}}
 \DeclareOption{GREEN}{\listset{\Tlp@Level}{GREEN}}
 \DeclareOption{AMBER}{\listset{\Tlp@Level}{AMBER}}
-\DeclareOption{WHITE}{\listset{\Tlp@Level}{WHITE}}
+\DeclareOption{AMBER+STRICT}{\listset{\Tlp@Level}{AMBER+STRICT}}
+\DeclareOption{CLEAR}{\listset{\Tlp@Level}{CLEAR}}
+
+\DeclareOption{WHITE}{\listset{\Tlp@Level}{WHITE}} % Deprecated as of v2.0
 
 \newif\ifTlp@LevelChr\Tlp@LevelChrfalse
 \DeclareOption{CHR}{\Tlp@LevelChrtrue}
@@ -28,6 +31,7 @@
 \definecolor{TlpRed}{RGB}{255,0,51}
 \definecolor{TlpAmber}{RGB}{255,192,0}
 \definecolor{TlpGreen}{RGB}{51,255,0}
+\definecolor{TlpClear}{RGB}{255,255,255}
 \definecolor{TlpWhite}{RGB}{255,255,255}
 \definecolor{TlpChr}{RGB}{0,192,244}
 
@@ -41,13 +45,17 @@
 }
 
 \newcommand\TLP[1]{%
+
     \IfEqCase*{#1}{%
         {RED}{\Tlp@Stamp{TlpRed}{TLP:RED}}%
         {AMBER}{\Tlp@Stamp{TlpAmber}{TLP:AMBER}}%
+        {AMBER+STRICT}{\Tlp@Stamp{TlpAmber}{TLP:AMBER+STRICT}}%
         {GREEN}{\Tlp@Stamp{TlpGreen}{TLP:GREEN}}%
-        {WHITE}{\Tlp@Stamp{TlpWhite}{TLP:WHITE}}%
+        {CLEAR}{\Tlp@Stamp{TlpClear}{TLP:CLEAR}}%
+        {WHITE}{\Tlp@Stamp{TlpWhite}{TLP:WHITE} \PackageWarning{tlp}{As of v2.0 of the Traffic Light Protocol TLP:WHITE is deprecated !}}%
         {CHR}{\Tlp@Stamp{TlpChr}{TLP:EX:CHR}}%
-    }[\PackageWarning{tlp}{Only RED, AMBER, GREEN, WHITE and CHR are defined, received '#1'}]%
+    }[\PackageWarning{tlp}{Only RED, AMBER, AMBER+STRICT, GREEN, CLEAR, WHITE and CHR are defined, received '#1'}]%
+    
 }
 
 \newcommand\tlpstamp{%
